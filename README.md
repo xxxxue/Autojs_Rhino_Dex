@@ -49,15 +49,11 @@ Rhino 命令行 类
 
 有兴趣的大佬可以 自己实现一下 jar命令行 转 dex
 
-## 赞赏
+## 支持作者
 
-如果这个开源项目 可以帮助到你,  你也可以请作者喝一杯咖啡。
+如果这个开源项目可以帮助到你,  你也可以请作者吃一包辣条。
 
-
-
-![](http://xxxxue.gitee.io/important/aliPay.png)
-
-![](http://xxxxue.gitee.io/important/wxPay.png)
+![pay](img.assets/pay.png)
 
 ## autojs 热更新dex 例子
 
