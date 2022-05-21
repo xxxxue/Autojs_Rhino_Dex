@@ -2,8 +2,6 @@
 
 # QQ: 1659809758
 
-
-
 ## 必要的 环境
 
 1. IDEA
@@ -48,6 +46,21 @@ Rhino 命令行 类
 现在的版本只支持  执行 mycode/main.java 来 转 dex . 
 
 有兴趣的大佬可以 自己实现一下 jar命令行 转 dex
+
+
+## 自己的软件加载DEX,运行后界面乱码闪退 BUG 
+
+> IDEA中顶部菜单 -- 帮助 -- 编辑自定义 VM选项 -- 内容最底下加入下面的代码.
+> 重启IDEA再次运行Main方法,可以看到控制台日志可以显示中文了. APP软件也正常了.
+```
+-Dfile.encoding=UTF-8
+```
+如图:
+![image](https://user-images.githubusercontent.com/32764266/169649429-c9a6d195-0fa4-4b0c-9fb6-aca66aa4ef92.png)
+
+
+
+
 
 ## 支持作者
 
