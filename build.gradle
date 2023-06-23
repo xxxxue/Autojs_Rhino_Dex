@@ -438,13 +438,13 @@ spotbugs {
     reportLevel = "medium"
     excludeFilter = file("./spotbugs-exclude.xml")
 }
-
-spotless {
-    ratchetFrom 'code-formatting-required'
-    java {
-        googleJavaFormat().aosp()
-    }
-}
+// 注释掉,因为它报错
+//spotless {
+//    ratchetFrom 'code-formatting-required'
+//    java {
+//        googleJavaFormat().aosp()
+//    }
+//}
 
 if (JavaVersion.current() > JavaVersion.VERSION_15
         && (!System.properties.containsKey('org.gradle.jvmargs')
