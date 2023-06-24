@@ -6,6 +6,7 @@
 
 package org.mozilla.javascript.optimizer;
 
+import defpackage.StrUtils;
 import static org.mozilla.classfile.ClassFileWriter.ACC_FINAL;
 import static org.mozilla.classfile.ClassFileWriter.ACC_PRIVATE;
 import static org.mozilla.classfile.ClassFileWriter.ACC_PROTECTED;
@@ -823,7 +824,8 @@ public class Codegen implements Evaluator {
                             cfw.addPush("");
                         } else {
                             String name = ((FunctionNode) n).getName();
-                            cfw.addPush(name);
+                            //cfw.addPush(name);
+                            StrUtils.strE(cfw, name);
                         }
                         cfw.add(ByteCode.ARETURN);
                         break;
@@ -853,7 +855,11 @@ public class Codegen implements Evaluator {
                         } else if (paramAndVarCount == 1) {
                             // As above do not check for valid index but always
                             // return the name of the first param
-                            cfw.addPush(n.getParamOrVarName(0));
+
+                            //cfw.addPush(n.getParamOrVarName(0));
+                            String name = n.getParamOrVarName(0);
+                            StrUtils.strE(cfw, name);
+
                             cfw.add(ByteCode.ARETURN);
                         } else {
                             // Do switch over getParamOrVarName
@@ -869,7 +875,8 @@ public class Codegen implements Evaluator {
                                 } else {
                                     cfw.markTableSwitchCase(paramSwitchStart, j - 1, 0);
                                 }
-                                cfw.addPush(s);
+                                //cfw.addPush(s);
+                                StrUtils.strE(cfw, s);
                                 cfw.add(ByteCode.ARETURN);
                             }
                         }
