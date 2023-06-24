@@ -61,6 +61,7 @@ dependencies {
     // 添加依赖
     implementation 'cn.hutool:hutool-all:5.3.6'
     implementation group: 'com.itranswarp', name: 'compiler', version: '1.0'
+    implementation 'commons-cli:commons-cli:1.5.0'
 
     // 原始依赖
     testImplementation "junit:junit:4.13.2"
@@ -211,22 +212,33 @@ task engineJar(type: Jar) {
 
 jar {
     dependsOn compileJava
-    from ('LICENSE.txt') {
-        into 'META-INF'
-    }
-    from ('NOTICE.txt') {
-        into 'META-INF'
-    }
-    from ('NOTICE-tools.txt') {
-        into 'META-INF'
+//    from ('LICENSE.txt') {
+//        into 'META-INF'
+//    }
+//    from ('NOTICE.txt') {
+//        into 'META-INF'
+//    }
+//    from ('NOTICE-tools.txt') {
+//        into 'META-INF'
+//    }
+
+    // 将 dx.jar 打包到 最终jar 的根目录
+    from ("resources/dx-29.0.3.jar"){
+        into ""
     }
     from sourceSets.main.output
     excludes = ["org/mozilla/javascript/engine/**", "META-INF/services/**"]
     // Class ImplementationVersion uses 'Implementation-Title'
+
+    from {
+        // 打包第三方的依赖到 jar 中
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
     manifest {
         attributes(
             "Manifest-Version": "1.0",
-            "Main-Class": "org.mozilla.javascript.tools.shell.Main",
+            //"Main-Class": "org.mozilla.javascript.tools.shell.Main"
+            "Main-Class": "org.mozilla.mycode.Main", // 修改命令行的 main 入口
             "Implementation-Version": project.version,
             "Implementation-Title":  "Mozilla Rhino",
             "Implementation-Vendor": "Mozilla Foundation",
