@@ -1,12 +1,15 @@
 # 魔改 Rhino 1.7.14
+将 js 转为 dex . 移除js源码字段, 加密所有字符串, 防止被轻易破解
 
-其他版本请查看其他分支
+
+`其他版本请查看其他分支`
 
 # 环境
 
 JDK 8
 
-# 执行 jar
+# 使用方法
+在 release 中下载 jar (或者自己用源码编译)
 
 到 jar 文件的所在目录执行命令
 
@@ -14,16 +17,28 @@ JDK 8
 
 `-o` 是输出的目录
 
+最终会生成一个 `aaa.dex` 文件.
+
 ```bash
 java -jar .\rhino-Rhino1_7_14_Release-1.7.14.jar -f E:\Work\AutojsProject\autox-super-kit\out\main.js -o E:\Work\AutojsProject\autox-super-kit\out\dist\
 ```
 
-# 打包 jar
+![image](https://github.com/xxxxue/Autojs_Rhino_Dex/assets/32764266/518488de-f9a0-41e5-b646-4794f4e63c67)
+
+autojs 核心代码: 
+```javascript
+//autojs 加载 dex 并运行
+runtime.loadDex("/sdcard/xxx辅助/aaa.dex");
+new Packages["aaa"]()();
+```
+更多代码 请看底部的 热更新小例子
+
+# 源码指南 
+打包 jar
 ```
 IDEA 右侧的 gradle - Tasks - build - jar
 ```
-
-# 修改 main 入口
+修改 main 入口
 ```
 build.gradle 中 修改 Main-Class
 
@@ -33,7 +48,7 @@ jar
             Main-Class
 ```
 
-
+# 注意事项
 ## 自己的软件加载DEX,运行后界面乱码闪退 BUG
 
 > IDEA中顶部菜单 -- 帮助 -- 编辑自定义 VM选项 -- 内容最底下加入下面的代码.
@@ -44,7 +59,7 @@ jar
 如图:
 ![image](https://user-images.githubusercontent.com/32764266/169649429-c9a6d195-0fa4-4b0c-9fb6-aca66aa4ef92.png)
 
-## 支持作者
+# 支持作者
 
 QQ: 1659809758
 
@@ -52,13 +67,15 @@ QQ: 1659809758
 
 ![pay](img.assets/pay.png)
 
-## autojs 热更新dex 例子
+# autojs 热更新 dex 例子
 
 ## 小提示:
 
 转dex之前,先到 js 混淆网站里把  js中的 所有的变量 和 方法名 全部重命名
 
 将混淆后的js 再转 dex ,更加安全..
+
+[autox-super-kit](https://github.com/xxxxue/autox-super-kit) 实现了 混淆 和 变量/方法名 全部重命名
 
 ## 缓存问题
 
