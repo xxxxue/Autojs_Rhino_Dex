@@ -1,7 +1,6 @@
 # 魔改 Rhino 1.7.14
 将 js 转为 dex . 移除js源码字段, 加密所有字符串, 防止被轻易破解
 
-
 `其他版本请查看其他分支`
 
 # 环境
@@ -13,22 +12,32 @@ JDK 8
 
 到 jar 文件的所在目录执行命令
 
-`-f` 是想要转换的 js 文件
+## 参数
 
-`-o` 是输出的目录
+必填项
+
+`-f` 想要转换的 js 文件
+
+`-o` 输出的目录
+
+可选项
+
+`-l` Rhino 优化等级 (例子: -l 5) ( 传参 -1 ~ 9 默认 9 )
+
+`-s` 禁用字符串加密 (程序默认会加密字符串, 命令中添加 `-s` 则禁用加密字符串) 
+
+
+```bash
+java -jar .\rhino-Rhino1_7_14_Release-1.7.14.jar -f E:\autox-super-kit\out\main.js -o E:\autox-super-kit\out\dist\
+```
 
 最终会生成一个 `aaa.dex` 文件.
 
-```bash
-java -jar .\rhino-Rhino1_7_14_Release-1.7.14.jar -f E:\Work\AutojsProject\autox-super-kit\out\main.js -o E:\Work\AutojsProject\autox-super-kit\out\dist\
-```
-
-![image](https://github.com/xxxxue/Autojs_Rhino_Dex/assets/32764266/518488de-f9a0-41e5-b646-4794f4e63c67)
-
-autojs 核心代码: 
+调用 dex : 
 ```javascript
-//autojs 加载 dex 并运行
+// autojs 加载 dex
 runtime.loadDex("/sdcard/xxx辅助/aaa.dex");
+// 运行
 new Packages["aaa"]()();
 ```
 更多代码 请看底部的 热更新小例子
