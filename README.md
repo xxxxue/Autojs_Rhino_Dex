@@ -57,7 +57,16 @@ jar
             Main-Class
 ```
 
+StrUtils.class  ( 使用 javac 编译 )
+
+```bash
+javac .\StrUtils.java
+```
+
+
+
 # 注意事项
+
 ## 自己的软件加载DEX,运行后界面乱码闪退 BUG
 
 > IDEA中顶部菜单 -- 帮助 -- 编辑自定义 VM选项 -- 内容最底下加入下面的代码.

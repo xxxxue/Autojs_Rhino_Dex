@@ -3,49 +3,17 @@ package org.mozilla.mycode;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.resource.ResourceUtil;
 import cn.hutool.core.util.CharsetUtil;
-import com.itranswarp.compiler.JavaStringCompiler;
+import org.apache.commons.cli.*;
 import org.mozilla.javascript.CompilerEnvirons;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.optimizer.ClassCompiler;
-import org.apache.commons.cli.*;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Map;
 
 public class Main {
-
-    /**
-     * 解密函数
-     */
-    static final String _javaSourceCode = "package defpackage;" +
-            "import org.mozilla.classfile.ByteCode;" +
-            "import org.mozilla.classfile.ClassFileWriter;" +
-            "public class StrUtils{" +
-            "		public static String d(String data)" +
-            "		{" +
-            "			int l = data.length() / 2;" +
-            "			byte[] b = new byte[l];" +
-            "			for (int i = 0; i < l; i++)" +
-            "			{" +
-            "				b[i] = Integer.valueOf(data.substring(i * 2, (i * 2) + 2), 16).byteValue();" +
-            "			}" +
-            "			for (int i2 = 0; i2 < b.length; i2++)" +
-            "			{" +
-            "				b[i2] = (byte) (b[i2] - 1);" +
-            "			}" +
-            "			return new String(b);" +
-            "		}" +
-            "	}	";
-
     /**
      * 工作的目录
      */
@@ -61,6 +29,7 @@ public class Main {
      */
     public static Boolean _isNoEncryptString = false;
     public static String _dxFileName = "dx-29.0.3.jar";
+    public static String _strUtilsClassFileName = "StrUtils.class";
 
     public static void main(String[] args) throws Exception {
 
@@ -79,7 +48,6 @@ public class Main {
             String inputFilePath = cmd.getOptionValue("f");
             String outputDirPath = cmd.getOptionValue("o");
 
-
             // 输出目录 再创建一个唯一的文件夹 (使用当前时间精确到秒)
             _outDirPath = Paths.get(outputDirPath, getTimeString()).toString();
             _level = Integer.valueOf(cmd.getOptionValue('l', "9"));
@@ -95,12 +63,13 @@ public class Main {
             System.out.println("===================================");
             System.out.println("===================================");
 
-            // 将 当前 jar 程序中的 dx.jar 释放到 outputDir 目录
-            byte[] fileData = ResourceUtil.readBytes(_dxFileName);
-            FileUtil.writeBytes(fileData, Paths.get(_outDirPath, _dxFileName).toString());
+            // 将 当前 jar 中的 dx.jar 释放到 outputDir 目录
+            FileUtil.writeBytes(ResourceUtil.readBytes(_dxFileName), Paths.get(_outDirPath, _dxFileName).toString());
 
+            // 读取 代码文本
             String code = FileUtil.readUtf8String(inputFilePath);
 
+            // 开始转 dex
             toDexFile(code);
 
         } catch (ParseException e) {
@@ -108,16 +77,7 @@ public class Main {
         }
     }
 
-    /**
-     * 获取时间 字符串
-     */
-    public static String getTimeString() {
-        Date date = new Date();
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd_HHmmss");
-        return formatter.format(date);
-    }
-
-    static void toDexFile(String code) throws Exception {
+    static void toDexFile(String code) {
         //创建 Rhino 编译环境 相关参数..
         CompilerEnvirons compilerEnv = new CompilerEnvirons();
         compilerEnv.setGeneratingSource(false); //编译后,不添加 js 源码
@@ -141,49 +101,20 @@ public class Main {
 
         for (int j = 0; j != compiled.length; j += 2) {
 
-            JavaStringCompiler javaStringCompiler = new JavaStringCompiler();
-
-            // 字符串 转为 java class 文件
-            Map<String, byte[]> results = javaStringCompiler.compile("StrUtils.java", _javaSourceCode);
-
-            //解密工具类的 数据
-            byte[] utilsBytes = results.get("defpackage.StrUtils");
-
+            // 生成 解密工具类 文件
+            byte[] utilsBytes = ResourceUtil.readBytes(_strUtilsClassFileName);
             String utilsClassPath = Paths.get(_outDirPath, "class", "defpackage", "StrUtils.class").toString();
-            File utilsFile = new File(utilsClassPath);
-            utilsFile.getParentFile().mkdirs(); //创建文件夹
+            FileUtil.writeBytes(utilsBytes, utilsClassPath);
 
-            try (FileOutputStream fos = new FileOutputStream(utilsFile)) {
-                fos.write(utilsBytes);
-            } catch (FileNotFoundException e) {
-                System.out.println("utils 文件未找到！");
-                e.printStackTrace();
-            } catch (IOException e) {
-                System.out.println("utils 文件保存失败！");
-                e.printStackTrace();
-            }
 
+            // 生成 自己的代码 文件
             String classPath = Paths.get(_outDirPath, "class", "aaa.class").toString();
-
-            // js 转为 class
             byte[] bytes = (byte[]) compiled[(j + 1)];
-            File file = new File(classPath);
-            file.getParentFile().mkdirs(); //创建文件夹
+            FileUtil.writeBytes(bytes, classPath);
 
-            try (FileOutputStream fos = new FileOutputStream(file)) {
-                fos.write(bytes);
-            } catch (FileNotFoundException e) {
-                System.out.println("文件未找到！");
-                e.printStackTrace();
-            } catch (IOException e) {
-                System.out.println("文件保存失败！");
-                e.printStackTrace();
-            }
-
+            // 将多个 class 合并为一个 jar
             String jarFileName = "code.jar";
-            //将两个 class 打包为 一个jar
             cmdExec("jar cvf " + jarFileName + " -C class .");
-
             System.out.println("开始转dex,js代码越多,耗时越长,请耐心等待");
 
             //将 jar 转为 dex
@@ -202,7 +133,6 @@ public class Main {
      * 执行cmd命令
      */
     public static void cmdExec(String cmd) {
-
         Runtime run = Runtime.getRuntime();
         try {
             Process p = run.exec(cmd, new String[]{}, new File(_outDirPath)); // 设置目录
@@ -210,9 +140,7 @@ public class Main {
             InputStream ers = p.getErrorStream();
             new Thread(new inputStreamThread(ins)).start();
             p.waitFor();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
     }
@@ -239,6 +167,15 @@ public class Main {
                 e.printStackTrace();
             }
         }
+    }
+
+    /**
+     * 获取时间 字符串
+     */
+    public static String getTimeString() {
+        Date date = new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd_HHmmss");
+        return formatter.format(date);
     }
 
 }

@@ -60,7 +60,6 @@ sourceSets {
 dependencies {
     // 添加依赖
     implementation 'cn.hutool:hutool-all:5.3.6'
-    implementation group: 'com.itranswarp', name: 'compiler', version: '1.0'
     implementation 'commons-cli:commons-cli:1.5.0'
 
     // 原始依赖
@@ -226,6 +225,12 @@ jar {
     from ("resources/dx-29.0.3.jar"){
         into ""
     }
+
+    // 将 StrUtils.class 打包到 最终jar 的根目录
+    from ("resources/StrUtils.class"){
+        into ""
+    }
+
     from sourceSets.main.output
     excludes = ["org/mozilla/javascript/engine/**", "META-INF/services/**"]
     // Class ImplementationVersion uses 'Implementation-Title'
