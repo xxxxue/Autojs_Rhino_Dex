@@ -945,6 +945,12 @@ public class ClassFileWriter {
      * @param k the constant
      */
     public void addPush(String k) {
+
+        if (k == null)
+        {
+            k = "";
+        }
+
         int length = k.length();
         int limit = itsConstantPool.getUtfEncodingLimit(k, 0, length);
         if (limit == length) {

@@ -1,166 +1,274 @@
-# Rhino: JavaScript in Java
+# 魔改 Rhino 1.7.14
 
-<a title="Rodrigo J De Marco, CC0, via Wikimedia Commons" href="https://commons.wikimedia.org/wiki/File:Rhino_(234581759).jpeg"><img width="384" alt="Rhino (234581759)" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/Rhino_%28234581759%29.jpeg/512px-Rhino_%28234581759%29.jpeg"></a>
+将 js 转为 dex, 移除 js 源码字段, 加密所有字符串, 防止被轻易破解
 
-Rhino is an implementation of JavaScript in Java.
+## 环境
 
-## License
+JDK 8
 
-Rhino is licensed under the [MPL 2.0](./LICENSE.txt).
+## 使用方法
 
-## Releases
+在 release 中下载 jar (或者自己用源码编译)
 
-<table>
-<tr><td><a href="https://github.com/mozilla/rhino/releases/tag/Rhino1_7R5_RELEASE">Rhino 1.7R5</a></td><td>January 29, 2015</td></tr>
-<tr><td><a href="https://github.com/mozilla/rhino/releases/tag/Rhino1_7_6_RELEASE">Rhino 1.7.6</a></td><td>April 15, 2015</td></tr>
-<tr><td><a href="https://github.com/mozilla/rhino/releases/tag/Rhino1_7_7_RELEASE">Rhino 1.7.7</a></td><td>June 17, 2015</td></tr>
-<tr><td><a href="https://github.com/mozilla/rhino/releases/tag/Rhino1_7_7_1_RELEASE">Rhino 1.7.7.1</a></td><td>February 2, 2016</td></tr>
-<tr><td><a href="https://github.com/mozilla/rhino/releases/tag/Rhino1_7_7_2_Release">Rhino 1.7.7.2</a></td><td>August 24, 2017</td></tr>
-<tr><td><a href="https://github.com/mozilla/rhino/releases/tag/Rhino1_7_8_Release">Rhino 1.7.8</a></td><td>January 22, 2018</td></tr>
-<tr><td><a href="https://github.com/mozilla/rhino/releases/tag/Rhino1_7_9_Release">Rhino 1.7.9</a></td><td>March 15, 2018</td></tr>
-<tr><td><a href="https://github.com/mozilla/rhino/releases/tag/Rhino1_7_10_Release">Rhino 1.7.10</a></td><td>April 9, 2018</td></tr>
-<tr><td><a href="https://github.com/mozilla/rhino/releases/tag/Rhino1_7_11_Release">Rhino 1.7.11</a></td><td>May 30, 2019</td></tr>
-<tr><td><a href="https://github.com/mozilla/rhino/releases/tag/Rhino1_7_12_Release">Rhino 1.7.12</a></td><td>January 13, 2020</td></tr>
-<tr><td><a href="https://github.com/mozilla/rhino/releases/tag/Rhino1_7_13_Release">Rhino 1.7.13</a></td><td>September 2, 2020</td></tr>
-<tr><td><a href="https://github.com/mozilla/rhino/releases/tag/Rhino1_7_14_Release">Rhino 1.7.14</a></td><td>January 6, 2022</td></tr>
-</table>
+到 jar 文件的所在目录执行命令
 
-[Release Notes](./RELEASE-NOTES.md) for recent releases.
+### 参数
 
-[Compatibility table](https://mozilla.github.io/rhino/compat/engines.html) which shows which advanced JavaScript
-features from ES6, and ES2016+ are implemented in Rhino.
+必填项
 
-[![GitHub Action Status](https://github.com/mozilla/rhino/actions/workflows/gradle.yml/badge.svg)](https://github.com/mozilla/rhino/actions/workflows/gradle.yml)
+`-f` 想要转换的 js 文件
 
-[![Mozilla](https://circleci.com/gh/mozilla/rhino.svg?style=shield)](https://app.circleci.com/pipelines/github/mozilla/rhino)
+`-o` 输出的目录
 
-## Documentation
+可选项
 
-Information for script builders and embedders:
+`-l` Rhino 优化等级 (例子: -l 9) ( 传参 -1 ~ 9 默认 0 )
 
-[Archived](http://web.archive.org/web/20210304081342/https://developer.mozilla.org/en-US/docs/Mozilla/Projects/Rhino/Documentation)
+`-s` 禁用字符串加密 (程序默认会加密字符串, 命令中添加 `-s` 则禁用加密字符串) 
 
-JavaDoc for all the APIs:
-
-[https://javadoc.io/doc/org.mozilla/rhino](https://javadoc.io/doc/org.mozilla/rhino)
-
-More resources if you get stuck:
-
-[https://developer.mozilla.org/en-US/docs/Mozilla/Projects/Rhino/Community](https://developer.mozilla.org/en-US/docs/Mozilla/Projects/Rhino/Community)
-
-## Building
-
-### How to Build
-
-Rhino builds with `Gradle`. Here are some useful tasks:
-```
-./gradlew jar
-```
-Build and create `Rhino` jar in the `buildGradle/libs` directory.
-```
-git submodule init
-git submodule update
-./gradlew test
-```
-Build and run all the tests, including the official [ECMAScript Test Suite](https://github.com/tc39/test262).
-See [Running tests](testsrc/README.md) for more detailed info about running tests.
-```
-./gradlew testBenchmark
-```
-Build and run benchmark tests.
-
-## Releasing and publishing new version
-
-1. Ensure all tests are passing
-2. Remove `-SNAPSHOT` from version in `gradle.properties` in project root folder
-3. Create file `gradle.properties` in `$HOME/.gradle` folder with following properties. Populate them with maven repo credentials and repo location.
-```
-mavenUser=
-mavenPassword=
-mavenSnapshotRepo=
-mavenReleaseRepo=
+```bash
+java -jar .\rhino-Rhino1_7_14_Release-1.7.14.jar -f E:\autox-super-kit\out\main.js -o E:\autox-super-kit\out\dist\
 ```
 
-4. Run `Gradle` task to publish artifacts to Maven Central.
-```
-./gradlew publish
-```
-5. Increase version and add `-SNAPSHOT` to it in `gradle.properties` in project root folder.
-6. Push `gradle.properties` to `GitHub`
+最终会生成一个 `aaa.dex` 文件.
 
-## Running
-
-Rhino can run as a stand-alone interpreter from the command line:
-```
-java -jar buildGradle/libs/rhino-1.7.12.jar -debug -version 200
-Rhino 1.7.9 2018 03 15
-js> print('Hello, World!');
-Hello, World!
-js>
-```
-There is also a "rhino" package for many Linux distributions as well as Homebrew for the Mac.
-
-You can also embed it, as most people do. See below for more docs.
-
-### Java 16 and later
-
-If you are using a modular JDK that disallows the reflective access to
-non-public fields (16 and later), you may need to configure the JVM with the
-[`--add-opens`](https://docs.oracle.com/en/java/javase/17/migrate/migrating-jdk-8-later-jdk-releases.html#GUID-12F945EB-71D6-46AF-8C3D-D354FD0B1781)
-option to authorize the packages that your scripts shall use, for example:
-```
---add-opens java.desktop/javax.swing.table=ALL-UNNAMED
+调用 dex : 
+```javascript
+"ui";
+// autojs 加载 dex
+runtime.loadDex("/sdcard/xxx辅助/aaa.dex");
+// 运行
+new Packages["aaa"]()();
 ```
 
-## Issues
+更多代码 请看底部的 热更新小例子
 
-Most issues are managed on GitHub:
+## 源码指南 
 
-[https://github.com/mozilla/rhino/issues](https://github.com/mozilla/rhino/issues)
+打包 jar
 
-## Contributing PRs
+```
+IDEA 右侧的 gradle - Tasks - build - jar
+```
 
-To submit a new PR, please use the following process:
+修改 main 入口
 
-* Ensure that your entire build passes "./gradlew check". This will include
-code formatting and style checks and runs the tests.
-* Please write tests for what you fixed, unless you can show us that existing
-tests cover the changes. Use existing tests, such as those in
-"testsrc/org/mozilla/javascript/tests", as a guide.
-* If you fixed ECMAScript spec compatibility, take a look at test262.properties and see
-if you can un-disable some tests.
-* Push your change to GitHub and open a pull request.
-* Please be patient as Rhino is only maintained by volunteers and we may need
-some time to get back to you.
-* Thank you for contributing!
+```
+build.gradle 中 修改 Main-Class
 
-### Code Formatting
+jar 
+    manifest
+        attributes
+            Main-Class
+```
 
-Code formatting was introduced in 2021. The "spotless" plugin will fail your
-build if you have changed any files that have not yet been reformatted.
-Please use "spotlessApply" to reformat the necessary files.
+StrUtils.class  ( 使用 javac 编译 )
 
-If you are the first person to touch a big file that spotless wants to make
-hundreds of lines of changes to, please try to put the reformatting changes
-alone into a single Git commit so that we can separate reformatting changes
-from more substantive changes.
+```bash
+javac .\StrUtils.java
+```
 
-> **Warning:** If you build with Java 16 or later, you need to apply a
-> workaround for a "spotless" issue. Otherwise, the task will be disabled
-> and your PR may fail.
-> 
-> The following must be added to your `gradle.properties`.
-> ```
-> org.gradle.jvmargs=--add-exports jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED \
->  --add-exports jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED \
->  --add-exports jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED \
->  --add-exports jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED \
->  --add-exports jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED
-> ```
-> For more details, see https://github.com/diffplug/spotless/issues/834#issuecomment-819118761
+## 注意事项
 
-## More Help
+### 自己的软件加载 dex, 运行后界面乱码闪退的 bug
 
-The Google group is the best place to go with questions:
+是系统中 JDK 默认编码的问题, 需要指定为 `UTF-8`
 
-[https://groups.google.com/forum/#!forum/mozilla-rhino](https://groups.google.com/forum/#!forum/mozilla-rhino)
+下面是 `两种情况` 下的解决方案
+
+#### 执行 jar 
+
+执行 jar 的情况, 在 `系统环境变量` 中添加
+
+```
+JAVA_TOOL_OPTIONS
+-Dfile.encoding=UTF-8
+```
+
+如图:
+
+![image](https://github.com/xxxxue/Autojs_Rhino_Dex/assets/32764266/cd46ec18-1477-48dc-8d1f-9300929d5650)
+
+### IDEA 运行项目
+
+IDEA中顶部菜单 -- 帮助 -- 编辑自定义 VM选项 -- 内容最底下加入下面的代码.
+
+重启 IDEA 再次运行 Main 方法, 可以看到控制台日志可以显示中文了, app 也正常了.
+
+```
+-Dfile.encoding=UTF-8
+```
+
+如图:
+
+![image](https://user-images.githubusercontent.com/32764266/169649429-c9a6d195-0fa4-4b0c-9fb6-aca66aa4ef92.png)
+
+## autojs 热更新 dex 例子
+
+### 小提示:
+
+转 dex 之前, 先到 js 混淆网站里把 js 中的 所有的变量 和 方法名 全部重命名,
+
+将混淆后的 js 再转 dex, 更加安全
+
+[xxxxue/autox-super-kit](https://github.com/xxxxue/autox-super-kit) 
+
+实现了 混淆 和 变量/方法名 全部重命名
+
+### 缓存问题
+
+按 返回键 的方式无法完全清掉后台, app 依然会使用 dex 的缓存
+
+***正确的操作方法是***
+
+点击设备的任务键, 将 app 手动关闭, 再打开即可更新到最新的版本
+
+```javascript
+"ui";
+
+var DexName = "aaa.dex";
+var DexVersionName = "DexVersion.js";
+//本地文件
+var LocalDirPath = "/sdcard/xxx辅助/";
+var LocalDexPath = LocalDirPath + DexName;
+var LocalVersionFilePath = LocalDirPath + DexVersionName;
+
+//网络文件
+var RemoteHost = "http://自己的地址/";
+var RemoteDexFilePath = RemoteHost + DexName;
+var RemoteVersionFilePath = RemoteHost + DexVersionName;
+
+
+var Header = {
+  headers: {
+    "User-Agent":
+      "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.25 Safari/537.36 Core/1.70.3754.400 QQBrowser/10.5.4034.400 ",
+  },
+};
+/**
+ * 开始运行
+ */
+function Run() {
+  try {
+    var checkState = false;
+
+    //更新
+    threads
+      .start(function () {
+        checkState = CheckVersion();
+      })
+      .join();
+
+    if (checkState) {
+      //加载dex并运行
+      runtime.loadDex(LocalDexPath);
+      new Packages["aaa"]()();
+    }
+  } catch (error) {
+    toast("检查更新状态失败\n" + error);
+    console.warn("Run Error: " + error);
+  }
+}
+
+/**
+ * 检查版本
+ */
+function CheckVersion() {
+  var res = true;
+  try {
+    if (!files.exists(LocalVersionFilePath)) {
+      console.log("创建版本文件");
+      files.createWithDirs(LocalVersionFilePath);
+      /** 默认值 */
+      files.write(LocalVersionFilePath, "0.0.0");
+    }
+
+    var localVersion = files.read(LocalVersionFilePath);
+    var remoteVersion = http.get(RemoteVersionFilePath,Header).body.string();
+
+    if (localVersion != remoteVersion || !files.exists(LocalDexPath)) {
+      console.warn("本地版本: " + localVersion);
+      console.warn("远程版本: " + remoteVersion);
+      if (DownloadDex()) {
+        files.write(LocalVersionFilePath, remoteVersion);
+      } else {
+        //res = false;
+      }
+    } else {
+      toast("最新版,无需更新");
+    }
+  } catch (error) {
+    console.warn("CheckVersion Error: " + error);
+    toast("检查版本发生异常\n" + error);
+    //OpenLog();
+  }
+  return res;
+}
+
+/**
+ * 下载Dex
+ */
+function DownloadDex() {
+  var res = false;
+  try {
+    console.warn("dex开始更新");
+    var res = http.get(RemoteDexFilePath,Header);
+    if (Http200(res)) {
+      files.writeBytes(LocalDexPath, res.body.bytes());
+      if (files.exists(LocalDexPath)) {
+        console.warn("dex更新成功");
+        toast("更新成功");
+        res = true;
+      }
+    } else {
+      console.warn("DownloadDex 下载失败:  " + res);
+      toast("DownloadDex 下载失败:  " + res);
+      OpenLog();
+      threads.shutDownAll();
+      sleep(99999);
+    }   
+  } catch (error) {
+    console.warn("DownloadDex Error: " + error);
+    toast("下载新的dex 异常.\n" + error);
+   // OpenLog();
+  }
+
+  return res;
+}
+
+/**
+ * 判断是否 不是 空
+ * @param {any}} content 内容
+ */
+function IsNotNullOrEmpty(content) {
+  return content != null && content != undefined && Trim(content).length > 0;
+}
+
+/**
+ * http200验证
+ * @param {object} content http返回的json
+ */
+function Http200(content) {
+  return (
+    IsNotNullOrEmpty(content) &&
+    (content.statusCode == 200 || content.statusCode == "200")
+  );
+}
+
+/**
+ * 去除左右空格
+ * @param {string} content
+ */
+function Trim(content) {
+  return (content + "").replace(/(^\s*)|(\s*$)/g, "");
+}
+
+function OpenLog() {
+  ui.run(function () {
+    // app.startActivity("console");
+   
+  });
+}
+
+Run();
+```
